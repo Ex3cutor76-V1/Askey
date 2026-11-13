@@ -63,7 +63,7 @@ EOF
 
 -v|--version)
 Askey
-Versão: 1.0
+Versão: 1.1
 ;;
 
 -ve|--verbose-encode)
