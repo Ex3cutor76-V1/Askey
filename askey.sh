@@ -62,8 +62,8 @@ EOF
 ;;
 
 -v|--version)
-Askey
-Versão: 1.1
+echo "Askey"
+echo "Versão: 1.2"
 ;;
 
 -ve|--verbose-encode)
