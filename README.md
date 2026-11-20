@@ -37,7 +37,7 @@ askey <flag> argumento
 | -ef ou --encode-file | Codifica o conteúdo de um arquivo |
 | -df ou --decode-file | Decodifica o conteúdo de um arquivo codificado em ASCII |
 | -vef ou --verbose-encode-file | Modo verboso do -ef |
-| vdf ou --verbose-decode-file | Modo verboso do -df |
+| -vdf ou --verbose-decode-file | Modo verboso do -df |
 
 ### Mensagem de Ex3cutor76
 Bem, este pequeno projeto foi feito apenas para o passar o tempo, foi divertido escrever o código para codificar frases.
