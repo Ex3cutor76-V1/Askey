@@ -9,7 +9,9 @@ temporario=$(mktemp)
 
 # Função de decodificação:
 decode() {
-for num in $*; do
+local num
+
+for num in "$@"; do
 
 # Verifica se é um número inteiro
 if ! [[ "$num" =~ ^[0-9]+$ ]]; then
@@ -23,12 +25,14 @@ echo "Erro: '$num' está fora do intervalo ASCII." >&2
 return 1
 fi
 
-printf "\\$(printf '%03o' "$num")"
+printf '%b' "\\$(printf '%03o' "$((10#$num))")"
 done
 }
 
 decode_file() {
     local arquivo="$1"
+    local linha
+    local -a numeros
 
     if [[ ! -f "$arquivo" || ! -r "$arquivo" ]]; then
         echo "Erro: arquivo inexistente ou sem permissão de leitura." >&2
@@ -36,7 +40,10 @@ decode_file() {
     fi
 
     while IFS= read -r linha || [[ -n "$linha" ]]; do
-        decode "$linha" || return 1
+        read -r -a numeros <<< "$linha"
+
+        decode "${numeros[@]}" || return 1
+
     done < "$arquivo"
 }
 
@@ -48,7 +55,8 @@ echo "$codificar"
 ;;
 
 -d|--decode)
-decode "$palavra"
+decode "$@"
+printf "\n"
 ;;
 
 -h|--help)
@@ -80,7 +88,7 @@ EOF
 
 -v|--version)
 echo "Askey"
-echo "Versão: 2.0"
+echo "Versão: 2.1"
 ;;
 
 -ve|--verbose-encode)
@@ -90,7 +98,8 @@ echo "$palavra ---> $codificar"
 -vd|--verbose-decode)
 printf 'Palavra: %s\n' "$palavra"
 printf 'Palavra decodificada: '
-decode "$palavra"
+decode "$@"
+printf "\n"
 ;;
 
 -ef|--encode-file)
@@ -126,14 +135,21 @@ fi
 
 -vdf|--verbose-decode-file)
 echo "Verificando se o arquivo existe..."
-if [ -f "$palavra" ]; then
-echo "Lendo arquivo..."
-echo "Escrevendo no temporário e alterando o nome..."
-decode_file "$palavra" > "$temporario"
+
+if [[ -f "$palavra" && -r "$palavra" ]]; then
+echo "Arquivo encontrado!"
+echo "Decodificando conteúdo..."
+
+if decode_file "$palavra" > "$temporario"; then
 mv "$temporario" "$palavra"
-echo "Arquivo decodificado!"
+echo "Arquivo decodificado com sucesso!"
 else
-echo "Arquivo inexiste"
+echo "Erro durante a decodificação."
+rm -f "$temporario"
+exit 1
+fi
+else
+echo "Arquivo inexistente ou sem permissão de leitura."
 fi
 ;;
 
